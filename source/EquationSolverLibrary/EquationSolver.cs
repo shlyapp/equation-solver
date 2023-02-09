@@ -15,18 +15,18 @@
 
         private static double CoaficentCath(string equation, string variable)
         {
-            string Temp = "";
+            string temp = "";
 
 
             for (int i = equation.IndexOf(variable) - 1; i > -1; i--)
             {
                 if ((char.IsNumber(equation[i])))
                 {
-                    Temp += equation[i];
+                    temp += equation[i];
                 }
                 else if (equation[i] == '-')
                 {
-                    Temp += equation[i];
+                    temp += equation[i];
                     break;
                 }
                 else
@@ -37,7 +37,7 @@
 
             try
             {
-                return Convert.ToDouble(Reverse(Temp));
+                return Convert.ToDouble(Reverse(temp));
             }
             catch
             {
@@ -46,7 +46,7 @@
         }
         private static double CoaficentCath(string equation, string variable, string[] whiteList)
         {
-            string Temp = "";
+            string temp = "";
 
             foreach (string str in whiteList)
             {
@@ -54,11 +54,11 @@
                 {
                     if ((char.IsNumber(equation[i])))
                     {
-                        Temp += equation[i];
+                        temp += equation[i];
                     }
                     else if (equation[i] == '-')
                     {
-                        Temp += equation[i];
+                        temp += equation[i];
                         break;
                     }
                     else
@@ -66,7 +66,7 @@
                         break;
                     }
                 }
-                if (Temp.Length != 0)
+                if (temp.Length != 0)
                 {
                     break;
                 }
@@ -74,7 +74,7 @@
 
             try
             {
-                return Convert.ToDouble(Reverse(Temp));
+                return Convert.ToDouble(Reverse(temp));
             }
             catch
             {
@@ -118,6 +118,6 @@
             }
 
         }
-        
+
     }
 }

@@ -33,7 +33,7 @@
         public static void clearLines()
         {
             lines.Clear();
-            lines[0] = "";
+            addLine("",0);
         }
 
         //Отображает строки консоли в порядке
@@ -45,7 +45,18 @@
             {
                 foreach (var letter in line)
                     Console.Write(letter);
+                Console.WriteLine();
+            }
+        }
 
+        public static void renderConsoleScreen(bool True)
+        {
+            Console.Clear();
+
+            foreach (var line in lines)
+            {
+                foreach (var letter in line)
+                    Console.Write(letter);
                 Console.WriteLine();
             }
         }

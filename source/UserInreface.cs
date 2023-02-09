@@ -1,4 +1,5 @@
 ﻿using EquationSolver.Equation;
+using ConsoleInterface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,44 +10,108 @@ namespace EquationSolver
 {
     public class UserInreface
     {
-        private static void InputEquations()
+
+        private static void ShowTitles()
         {
-            EquationValidator validator = new EquationValidator();
-            string equation = validator.InputEquation();
-            double x = EquationParser.CoaficentCath(equation, "x2");
-            Console.WriteLine(x.ToString());           
+            List<string> titles = new List<string>() {
+                "TeamLeader",
+                "Насибуллин Даниил",
+                "", "Команда тестировки", "",
+                "Бимаков Даниил",
+                "Федотов Павел",
+                "Меркульев Никита",
+                "", "Команда разработчиков библиотеки", "",
+                "Шкляев Дмитрий",
+                "Колбин Илья",
+                "","Команда разработчиков UI", "",
+                "Костенков Даниил",
+                "Соболев Артур",
+                "Широбоков Илья"};
+
+            for (int i = 0; ; i++)
+            {
+                Thread.Sleep(400);
+                int position = i;
+                foreach (var title in titles)
+                {
+                    position = position - 2;
+                    if (position < 0) break;
+                    else
+                    {
+                        ConsoleScreen.addLine(new String(' ', Math.Abs((Console.WindowWidth / 2) - (title.Length / 2))) + title, position);
+                    }
+
+                }
+
+                ConsoleScreen.renderConsoleScreen();
+                Console.SetCursorPosition(0, 0);
+                ConsoleScreen.clearLines();
+            }
         }
 
         public static void SelectUserAction()
         {
+            const string SelectedMarker = "## ";
+            const string UnSelectedMarker = "-- ";
+
             bool isOpen = true;
+            int selectIndex = 0;
+            var elections = new List<string>()
+            {
+                    "Ршеить уравнение",
+                    "История",
+                    "Титры",
+            };
+
             while (isOpen)
             {
-                Console.SetCursorPosition(0, 20);
-                Console.WriteLine("Допустимые значения: цифры от 0 до 9, 'x', 'X', '=', '+', '-'.");
-                Console.SetCursorPosition(0, 0);
-                Console.Write("Чтобы ввести выражение нажмите 1\n" +
-                    "Чтобы закрыть прграмму нажмите 2\n" +
-                    "\nВыберите действие: ");
-
-                switch (Console.ReadLine())
+                
+                for (int i = 0; i < elections.Count; i++)
                 {
-                    case "1":
-                        InputEquations();
-                        break;
+                    if (i == selectIndex)
+                    {
+                        ConsoleScreen.addLine(SelectedMarker + elections[i], i);
+                    }
+                    else
+                    {
+                        ConsoleScreen.addLine(UnSelectedMarker + elections[i], i);
+                    }
+                }
 
-                    case "2":
-                        isOpen = false;
-                        break;
+                ConsoleScreen.renderConsoleScreen();
 
-                    case "3":
-                        break;
+                ConsoleKeyInfo keyInfo = Console.ReadKey(true);
+                ConsoleKey keyConsole = keyInfo.Key;
+                char keyChar = keyInfo.KeyChar;
 
-                    default:
-                        Console.WriteLine("Сударь, Вы неправы! Соизвольте испробовать еще раз.");
-                        Console.ReadKey();
-                        Console.Clear();
-                        break;
+                if (keyConsole == ConsoleKey.DownArrow) 
+                {
+                    if ((selectIndex < elections.Count-1))
+                    {
+                        selectIndex++;
+                    }
+                }
+                else if (keyConsole == ConsoleKey.UpArrow)
+                {
+                    if (selectIndex > 0)
+                    {
+                        selectIndex--;
+                    }
+                }
+                else if (keyConsole == ConsoleKey.Enter)
+                {
+                    switch (selectIndex) 
+                    {
+                        case 0:
+                            string quadration = EquationValidator.InputEquation();
+                            break;
+                        case 1:
+                            
+                            break;
+                        case 2:
+                            ShowTitles();
+                            break;
+                    }
                 }
             }
         }
