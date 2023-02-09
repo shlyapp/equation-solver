@@ -6,14 +6,14 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace EquationSolver.Equation
+namespace EquationSolver
 {
-    public class EquationValidator
+    public static class EquationValidator
     {
         //Ошибка ввода для вывода пользователю
-        private string errorMessage = "";
+        private static string errorMessage = "";
         //Список разрешенных символов не включая цифер
-        private char[] whiteListChar = { '+', '-', '=', 'x' };
+        private static char[] whiteListChar = { '+', '-', '=', 'x' };
 
         // Эти методы осуществляют условия возможности написания символов и если
         // нужно, обозначение ошибки
@@ -23,7 +23,7 @@ namespace EquationSolver.Equation
         // - Всегда использовать ветвления
         // предотвращающие наибольшее количество выхода из размерности массива выше остальных
         // - В коде к этим методам обращается программа что бы проверить 
-        private bool NumberPlaceCondition(string line, char number, int index)
+        private static bool NumberPlaceCondition(string line, char number, int index)
         {
             try
             {
@@ -47,23 +47,23 @@ namespace EquationSolver.Equation
                 return true;
             }
         }
-        private bool SimbolsPlaceCondition(string line, char simbol, int index)
+        private static bool SimbolsPlaceCondition(string line, char simbol, int index)
         {
             try
             {
                 if (simbol == '-')
                 {
-                    if (line[index - 1] == '-' || line[index + 1] == '-')
+                    if ((line[index - 1] == '-' || line[index + 1] == '-') || (line[index - 1] == '+' || line[index + 1] == '+'))
                     {
-                        errorMessage = "Нельзя ставить рядом два минуса";
+                        errorMessage = "Нельзя ставить рядом два знака";
                         return false;
                     }
                 }
                 if (simbol == '+')
                 {
-                    if (line[index - 1] == '+' || line[index + 1] == '+')
+                    if ((line[index - 1] == '+' || line[index + 1] == '+') || (line[index - 1] == '-' || line[index + 1] == '-'))
                     {
-                        errorMessage = "Нельзя ставить рядом два плюса";
+                        errorMessage = "Нельзя ставить рядом два знака";
                         return false;
                     }
                 }
@@ -102,7 +102,7 @@ namespace EquationSolver.Equation
                 return true;
             }
         }
-        private bool LineCondition(string line)
+        private static bool LineCondition(string line)
         {
             try
             {
@@ -167,7 +167,7 @@ namespace EquationSolver.Equation
                 ConsoleScreen.clearLines();
             }
         }
-        public string InputEquation()
+        public static string InputEquation()
         {
             //Константы здачи интерфеса
             const int inputLineIndex = 2;
@@ -239,7 +239,6 @@ namespace EquationSolver.Equation
                 ConsoleScreen.renderConsoleScreen();
                 errorMessage = "";
             }
-
         }
     }
 }
