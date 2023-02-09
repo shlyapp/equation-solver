@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using equationSolver.Equation;
 
 namespace EquationSolver
 {
@@ -49,6 +50,24 @@ namespace EquationSolver
             }
         }
 
+        public static void ShowHistory()
+        {
+            EquationLogger logger = new EquationLogger("history.txt");
+            List<string> solutions = logger.GetHistory();
+
+            ConsoleScreen.clearLines();
+            for (int i = 0; i < solutions.Count; i++)
+            {
+                ConsoleScreen.addLine(solutions[i], i);
+            }
+
+            ConsoleScreen.addLine("Нажмите Enter чтобы вернуться назад", solutions.Count);
+
+            ConsoleScreen.renderConsoleScreen();
+            ConsoleScreen.clearLines();
+            Console.ReadKey();
+        }
+
         public static void SelectUserAction()
         {
             const string SelectedMarker = "## ";
@@ -65,7 +84,7 @@ namespace EquationSolver
 
             while (isOpen)
             {
-                
+
                 for (int i = 0; i < elections.Count; i++)
                 {
                     if (i == selectIndex)
@@ -84,9 +103,9 @@ namespace EquationSolver
                 ConsoleKey keyConsole = keyInfo.Key;
                 char keyChar = keyInfo.KeyChar;
 
-                if (keyConsole == ConsoleKey.DownArrow) 
+                if (keyConsole == ConsoleKey.DownArrow)
                 {
-                    if ((selectIndex < elections.Count-1))
+                    if ((selectIndex < elections.Count - 1))
                     {
                         selectIndex++;
                     }
@@ -100,13 +119,14 @@ namespace EquationSolver
                 }
                 else if (keyConsole == ConsoleKey.Enter)
                 {
-                    switch (selectIndex) 
+                    switch (selectIndex)
                     {
                         case 0:
                             string quadration = EquationValidator.InputEquation();
                             break;
                         case 1:
-                            
+                            ShowHistory();
+                            selectIndex = -1;
                             break;
                         case 2:
                             ShowTitles();
