@@ -34,7 +34,7 @@ namespace equationSolver.Equation
         {
             StreamWriter file = new StreamWriter(path, true);
 
-            file.WriteLine($"Уравнение: {equation}\n{result[0]} и {result[1]}\n");
+            file.WriteLine($"Уравнение: {equation}\nКорни: {result[0]} и {result[1]}\n");
             file.Close();
         }
 

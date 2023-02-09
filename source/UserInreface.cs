@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel;
+using equationSolver.Equation;
 
 namespace EquationSolver
 {
@@ -89,6 +90,25 @@ namespace EquationSolver
             }
 
         }
+
+        public static void ShowHistory()
+        {
+            EquationLogger logger = new EquationLogger("history.txt");
+            List<string> solutions = logger.GetHistory();
+
+            ConsoleScreen.clearLines();
+            for (int i = 0; i < solutions.Count; i++)
+            {
+                ConsoleScreen.addLine(solutions[i], i);
+            }
+
+            ConsoleScreen.addLine("Нажмите Enter чтобы вернуться назад", solutions.Count);
+
+            ConsoleScreen.renderConsoleScreen();
+            ConsoleScreen.clearLines();
+            Console.ReadKey();
+        }
+
         public static void SelectUserAction()
         {
             const string SelectedMarker = "## ";
@@ -98,7 +118,7 @@ namespace EquationSolver
             int selectIndex = 0;
             var elections = new List<string>()
             {
-                    "Ршеить уравнение",
+                    "Решить уравнение",
                     "История",
                     "Титры",
             };
@@ -147,11 +167,16 @@ namespace EquationSolver
                             double[] coafficents = EquationParser.ReturnCoaficents(equation);
                             var result = EquationSolver.SolveQuadraticEquation(coafficents[0], coafficents[1], coafficents[2], coafficents[3], coafficents[4], coafficents[5]);
 
+                            EquationLogger logger = new EquationLogger("history.txt");
+                            logger.AddEquationSolving(equation, result);
+
                             ShowResults(result, equation);
 
                             break;
                         case 1:
 
+                            ShowHistory();
+                            selectIndex = -1;
                             break;
                         case 2:
                             ShowTitles();
