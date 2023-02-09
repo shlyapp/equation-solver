@@ -33,7 +33,7 @@
         public static void clearLines()
         {
             lines.Clear();
-            addLine("",0);
+            addLine("", 0);
         }
 
         //Отображает строки консоли в порядке

@@ -1,4 +1,7 @@
-﻿namespace EquationSolverLibrary
+﻿using System.Security.AccessControl;
+using System.Security.Cryptography.X509Certificates;
+
+namespace EquationSolver
 {
     public static class EquationSolver
     {
@@ -11,6 +14,21 @@
                 reverse += cArray[i];
             }
             return reverse;
+        }
+
+        private static double[] ReturnCoaficents(string equation)
+        {
+            string equationLeftSide = equation.Split('=')[0];
+            string equationRightSide = equation.Split('=')[1];
+            return new double[6]
+            {
+                CoaficentCath(equationLeftSide,"x2"),
+                CoaficentCath(equationLeftSide,"x",new string[]{"-","+","="}),
+                CoaficentCath(equationLeftSide),
+                CoaficentCath(equationRightSide,"x2"),
+                CoaficentCath(equationRightSide,"x",new string[]{"-","+","="}),
+                CoaficentCath(equationRightSide),
+            };
         }
 
         private static double CoaficentCath(string equation, string variable)
@@ -80,6 +98,30 @@
             {
                 return 0;
             }
+        }
+
+        private static double CoaficentCath(string equation)
+        {
+            string temp = "";
+
+
+            for (int i = 0; i < equation.Length; i++)
+            {
+                if (char.IsNumber(equation[i]))
+                {
+                    temp += equation[i];
+                }
+                else if (equation[i] == 'x')
+                {
+                    temp = "";
+                }
+            }
+
+            try
+            {
+                return Convert.ToDouble(Reverse(temp));
+            }
+            catch { return 0; }
         }
 
         public static double[] SolveQuadraticEquation(double A, double B, double C, double D, double E, double F)

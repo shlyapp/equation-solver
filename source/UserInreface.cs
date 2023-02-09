@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using equationSolver.Equation;
+using System.ComponentModel;
 
 namespace EquationSolver
 {
@@ -52,24 +52,43 @@ namespace EquationSolver
             }
         }
 
-        public static void ShowHistory()
+        private static void ShowResults(double[] results, string equation)
         {
-            EquationLogger logger = new EquationLogger("history.txt");
-            List<string> solutions = logger.GetHistory();
-
             ConsoleScreen.clearLines();
-            for (int i = 0; i < solutions.Count; i++)
+
+            ConsoleScreen.addLine($"Уравнение:{equation}", 0);
+            ConsoleScreen.addLine($"---------------------------", 1);
+            ConsoleScreen.addLine($"Найденые корни:", 2);
+            ConsoleScreen.addLine("Что бы вернуться нажмите Enter", 5);
+
+            if (results.Length == 0)
             {
-                ConsoleScreen.addLine(solutions[i], i);
+                ConsoleScreen.addLine("Нет решений", 3);
+            }
+            else
+            {
+                for (int i = 0; i < results.Length; i++)
+                {
+                    ConsoleScreen.addLine(Convert.ToString(results[i]), i + 3);
+                }
             }
 
-            ConsoleScreen.addLine("Нажмите Enter чтобы вернуться назад", solutions.Count);
-
             ConsoleScreen.renderConsoleScreen();
-            ConsoleScreen.clearLines();
-            Console.ReadKey();
-        }
 
+            while (true)
+            {
+                ConsoleKeyInfo keyInfo = Console.ReadKey(true);
+                ConsoleKey keyConsole = keyInfo.Key;
+                char keyChar = keyInfo.KeyChar;
+
+                if (keyConsole == ConsoleKey.Enter)
+                {
+                    ConsoleScreen.clearLines();
+                    SelectUserAction();
+                }
+            }
+
+        }
         public static void SelectUserAction()
         {
             const string SelectedMarker = "## ";
@@ -124,11 +143,15 @@ namespace EquationSolver
                     switch (selectIndex)
                     {
                         case 0:
-                            string quadration = EquationValidator.InputEquation();
+                            string equation = EquationValidator.InputEquation();
+                            double[] coafficents = EquationParser.ReturnCoaficents(equation);
+                            var result = EquationSolver.SolveQuadraticEquation(coafficents[0], coafficents[1], coafficents[2], coafficents[3], coafficents[4], coafficents[5]);
+
+                            ShowResults(result, equation);
+
                             break;
                         case 1:
-                            ShowHistory();
-                            selectIndex = -1;
+
                             break;
                         case 2:
                             ShowTitles();
