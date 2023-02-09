@@ -18,21 +18,35 @@ namespace EquationSolver.Equation
             }
             return reverse;
         }
-
-        public static double CoaficentCath(string equation, string variable)
+        public static double[] ReturnCoaficents(string equation)
         {
-            string Temp = "";
+            string equationLeftSide = equation.Split('=')[0];
+            string equationRightSide = equation.Split('=')[1];
+            return new double[6]
+            {
+                CoaficentCath(equationLeftSide,"x2"),
+                CoaficentCath(equationLeftSide,"x",new string[]{"-","+","="}),
+                CoaficentCath(equationLeftSide),
+                CoaficentCath(equationRightSide,"x2"),
+                CoaficentCath(equationRightSide,"x",new string[]{"-","+","="}),
+                CoaficentCath(equationRightSide),
+            };
+        }
+        private static double CoaficentCath(string equation, string variable)
+        {
+            if (!equation.Contains(variable)) return 0;
 
+            string temp = "";
 
             for (int i = equation.IndexOf(variable) - 1; i > -1; i--)
             {
                 if ((char.IsNumber(equation[i])))
                 {
-                    Temp += equation[i];
+                    temp += equation[i];
                 }
                 else if (equation[i] == '-')
                 {
-                    Temp += equation[i];
+                    temp += equation[i];
                     break;
                 }
                 else
@@ -43,16 +57,18 @@ namespace EquationSolver.Equation
 
             try
             {
-                return Convert.ToDouble(Reverse(Temp));
+                return Convert.ToDouble(Reverse(temp));
             }
             catch
             {
-                return 0;
+                return 1;
             }
         }
-        public static double CoaficentCath(string equation, string variable, string[] whiteList)
+        private static double CoaficentCath(string equation, string variable, string[] whiteList)
         {
-            string Temp = "";
+            if (!equation.Contains(variable)) return 0;
+
+            string temp = "";
 
             foreach (string str in whiteList)
             {
@@ -60,11 +76,11 @@ namespace EquationSolver.Equation
                 {
                     if ((char.IsNumber(equation[i])))
                     {
-                        Temp += equation[i];
+                        temp += equation[i];
                     }
                     else if (equation[i] == '-')
                     {
-                        Temp += equation[i];
+                        temp += equation[i];
                         break;
                     }
                     else
@@ -72,7 +88,7 @@ namespace EquationSolver.Equation
                         break;
                     }
                 }
-                if (Temp.Length != 0)
+                if (temp.Length != 0)
                 {
                     break;
                 }
@@ -80,12 +96,34 @@ namespace EquationSolver.Equation
 
             try
             {
-                return Convert.ToDouble(Reverse(Temp));
+                return Convert.ToDouble(Reverse(temp));
             }
             catch
             {
-                return 0;
+                return 1;
             }
+        }
+        private static double CoaficentCath(string equation)
+        {
+            string temp = "";
+
+            for (int i = 0; i < equation.Length; i++)
+            {
+                if (char.IsNumber(equation[i]))
+                {
+                    temp += equation[i];
+                }
+                else if (equation[i] == 'x')
+                {
+                    temp = "";
+                }
+            }
+
+            try
+            {
+                return Convert.ToDouble(Reverse(temp));
+            }
+            catch { return 0; }
         }
     }
 }
