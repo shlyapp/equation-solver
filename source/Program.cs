@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace solvingEquations
+namespace EquationSolver
 {
     public class Program
     {
         static void Main(string[] args)
         {
+            UserInreface.SelectUserAction();
         }
     }
 }

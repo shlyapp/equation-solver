@@ -1,25 +1,20 @@
-﻿using solvingEquations.Equation;
+﻿using EquationSolver.Equation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace solvingEquations
+namespace EquationSolver
 {
     public class UserInreface
     {
         private static void InputEquations()
         {
-            Console.Write("Введите приложение: ");
-            string equations = Console.ReadLine();
-
-            EquationParser parser = new EquationParser(equations);
-            
-
-            //double[] solve = Equation.SolveQuadraticEquation(parser.Odds[0], parser.Odds[1], parser.Odds[2], parser.Odds[3], parser.Odds[4], parser.Odds[5]);
-
-
+            EquationValidator validator = new EquationValidator();
+            string equation = validator.InputEquation();
+            double x = EquationParser.CoaficentCath(equation, "x2");
+            Console.WriteLine(x.ToString());           
         }
 
         public static void SelectUserAction()

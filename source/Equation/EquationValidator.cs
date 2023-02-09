@@ -1,119 +1,245 @@
-﻿using System;
+﻿using ConsoleInterface;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace solvingEquations.Equation
+namespace EquationSolver.Equation
 {
     public class EquationValidator
     {
-        private string _equation;
+        //Ошибка ввода для вывода пользователю
+        private string errorMessage = "";
+        //Список разрешенных символов не включая цифер
+        private char[] whiteListChar = { '+', '-', '=', 'x' };
 
-        private bool IsCorrectNumberOfVariable()
-        {
-            string[] chasti = _equation.Split('=');
-            int schet1 = 0;
-            int schet2 = 0;
-            int schet3 = 0;
-            int schet4 = 0;
-
-            for (int i = 0; i < chasti[0].Length - 1; i++)
-            {
-                if (chasti[0][i] == 'x') schet1++;
-                if (chasti[0][i] == 'x' && chasti[0][i + 1] == '2') schet2++;
-            }
-            for (int i = 0; i < chasti[1].Length - 1; i++)
-            {
-                if (chasti[1][i] == 'x') schet3++;
-                if (chasti[1][i] == 'x' && chasti[1][i + 1] == '2') schet4++;
-            }
-
-            if (schet1 > 1 || schet2 > 1 || schet3 > 1 || schet4 > 1)
-            {
-                EquationLogger.ShowErrorMessage("Неверное количество переменных");
-                return false;
-            }
-            return true;
-        }
-
-        private bool IsCorrestEqualSymbol()
-        {
-            int schet = 0;
-
-            for (int i = 0; i < _equation.Length; i++)
-            {
-                if (_equation[i] == '=') schet++;
-            }
-
-            if (schet == 1)
-            {
-                return true;
-            }
-            else
-            {
-                EquationLogger.ShowErrorMessage("Некорректное количество знаков равно");
-                return false;
-            }
-        }
-        private bool IsMissingX()
-        {
-            int countOfX = 0;
-
-            for (int i = 0; i < _equation.Length; i++)
-            {
-                if (_equation[i] == 'x')
-                    countOfX++;
-            }
-
-            if (countOfX == 0)
-            {
-                EquationLogger.ShowErrorMessage("Нет переменной x");
-                return false;
-            }
-
-            return true;
-        }
-
-        private bool HaveUncorrectSymbols()
-        {
-            char[] symbols = new char[] {'0', '1', '2', '3', '4', '5', '6', '7',
-                                        '8', '9', 'x', 'X', '=', '+', '-'};
-            bool result = true;
-            for (int i = 0; i < _equation.Length; i++)
-            {
-                if (!symbols.Contains(_equation[i]))
-                {
-                    EquationLogger.ShowErrorMessage("Формула содержит некорректные символы");
-                    return true;
-                }
-            }
-            return !result;
-        }
-
-        public EquationValidator(string equationForValidate)
-        {
-            _equation = equationForValidate;
-        }
-
-        public bool Validate()
+        // Эти методы осуществляют условия возможности написания символов и если
+        // нужно, обозначение ошибки
+        // Их удобно изменять и добавлять новые
+        // Правила их написания:
+        // - Возвращение значения False должно быть в конце метода
+        // - Всегда использовать ветвления
+        // предотвращающие наибольшее количество выхода из размерности массива выше остальных
+        // - В коде к этим методам обращается программа что бы проверить 
+        private bool NumberPlaceCondition(string line, char number, int index)
         {
             try
             {
-                if (!HaveUncorrectSymbols() && IsCorrectNumberOfVariable() && !IsMissingX() && IsCorrestEqualSymbol() && (string.IsNullOrEmpty(_equation)))
+                if (line[index - 1] == 'x')
                 {
-                    return true;
+                    if (!(number == '1' || number == '2'))
+                    {
+                        errorMessage = "Максимальная степень 2";
+                        return false;
+                    }
+                }
+                if (!(line[index - 2] != 'x') && (char.IsDigit(line[index - 1])))
+                {
+                    errorMessage = "Максимальная степень 2";
+                    return false;
+                }
+                else return true;
+            }
+            catch (IndexOutOfRangeException)
+            {
+                return true;
+            }
+        }
+        private bool SimbolsPlaceCondition(string line, char simbol, int index)
+        {
+            try
+            {
+                if (simbol == '-')
+                {
+                    if (line[index - 1] == '-' || line[index + 1] == '-')
+                    {
+                        errorMessage = "Нельзя ставить рядом два минуса";
+                        return false;
+                    }
+                }
+                if (simbol == '+')
+                {
+                    if (line[index - 1] == '+' || line[index + 1] == '+')
+                    {
+                        errorMessage = "Нельзя ставить рядом два плюса";
+                        return false;
+                    }
+                }
+                if (simbol == '=')
+                {
+                    if (!(line.IndexOf('=') == -1))
+                    {
+                        errorMessage = "В условии уравнения недопустимо два равно";
+                        return false;
+                    }
+                }
+                if (simbol == 'x')
+                {
+                    if (line[index - 1] == 'x' || line[index + 1] == 'x')
+                    {
+                        errorMessage = "Нельзя ставить рядом два x";
+                        return false;
+                    }
+                    for (int i = index - 1; i > 0; i--)
+                    {
+                        if (new char[] { '=', '-', '+' }.Contains(line[i]))
+                        {
+                            break;
+                        }
+                        if (line[i] == 'x')
+                        {
+                            errorMessage = "Недопустима неясность с доп. x";
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            }
+            catch (IndexOutOfRangeException)
+            {
+                return true;
+            }
+        }
+        private bool LineCondition(string line)
+        {
+            try
+            {
+                if (line.Length == 0)
+                {
+                    errorMessage = "//Строка ввода пуста";
+                    return false;
+                }
+                if (line[line.Length - 1] == '-')
+                {
+                    errorMessage = "//Минус на конце является ошибкой";
+                    return false;
+                }
+                if (line[line.Length - 1] == '+')
+                {
+                    errorMessage = "//Плюс на конце является ошибкой";
+                    return false;
+                }
+                if (!(line.Contains('=')))
+                {
+                    errorMessage = "//Равно отсутсвует, это не уравнение";
+                    return false;
+                }
+                if (line[line.Length - 1] == '=')
+                {
+                    errorMessage = "//Одна часть равно пуста";
+                    return false;
+                }
+                if (line[0] == '=')
+                {
+                    errorMessage = "//Одна часть равно пуста";
+                    return false;
+                }
+            }
+            catch (IndexOutOfRangeException)
+            {
+                return true;
+            }
+            return true;
+        }
+
+        //Титры, но не заюзаны
+        static void Titles(List<string> titles)
+        {
+            for (int i = 0; ; i++)
+            {
+                Thread.Sleep(800);
+                int position = i;
+                foreach (var title in titles)
+                {
+
+                    position = position - 2;
+                    if (position < 0) break;
+                    else
+                    {
+                        ConsoleScreen.addLine(new String(' ', 25) + title, position);
+                    }
+
+                }
+                ConsoleScreen.renderConsoleScreen();
+                Console.SetCursorPosition(0, 0);
+                ConsoleScreen.clearLines();
+            }
+        }
+        public string InputEquation()
+        {
+            //Константы здачи интерфеса
+            const int inputLineIndex = 2;
+            const int errortLineIndex = 4;
+
+            //Строка ввода
+            var inputString = new StringBuilder();
+
+            //Статичная часть интерфейса
+            ConsoleScreen.addLine("Ввод уравнения вида Ax2+Bx+C=Dx2+Ex+F", 0);
+            ConsoleScreen.addLine("-------------------------------------------------", inputLineIndex + 1);
+            ConsoleScreen.addLine("-------------------------------------------------", inputLineIndex - 1);
+
+            //Цикл ввода уравнения
+            while (true)
+            {
+                //Хранение всех необходимых данных о нажимаемой клавише
+                ConsoleKeyInfo keyInfo = Console.ReadKey(true);
+                ConsoleKey keyConsole = keyInfo.Key;
+                char keyChar = keyInfo.KeyChar;
+
+                //Проверка, является ли число числом или разрешенным символом
+                if (whiteListChar.Contains(keyChar) || char.IsNumber(keyChar))
+                {
+                    //Проверка на возможность написать цифру (ссылается на метод выше)
+                    if (char.IsDigit(keyChar))
+                    {
+                        if (NumberPlaceCondition(inputString.ToString(), keyChar, inputString.Length))
+                        {
+                            inputString.Append(keyChar);
+                        }
+                    }
+                    // Проверка на возможность написать разрешенный цифр (ссылается на метод выше)
+                    else
+                    {
+                        if (SimbolsPlaceCondition(inputString.ToString(), keyChar, inputString.Length))
+                        {
+                            inputString.Append(keyChar);
+                        }
+                    }
+                }
+                //Возможность стирать строку, т.е. проверка нажатие на backspace и
+                //соответсвующая функциональность
+                else if (keyConsole == ConsoleKey.Backspace)
+                {
+                    if (inputString.Length > 0)
+                    {
+                        inputString.Remove(inputString.Length - 1, 1);
+                    }
+                }
+                //Окончание ввода уравнения
+                else if (keyConsole == ConsoleKey.Enter)
+                {
+                    //Проверка на наличае ошибок не учтенным автоблокированием
+                    if (LineCondition(inputString.ToString()))
+                    {
+                        return inputString.ToString();
+                    }
+                }
+                //Исключение из возможноси ввода остальных неразрешенных символов
+                else
+                {
+                    errorMessage = $"Символ '{keyChar}' недопустим";
                 }
 
-            }
-            catch (Exception ex)
-            {
-                EquationLogger.ShowErrorMessage(ex.Message);
-                return false;
+                //Апдейт интерфесса консоли
+                ConsoleScreen.addLine(inputString.ToString(), inputLineIndex);
+                ConsoleScreen.addLine("|!|" + errorMessage, errortLineIndex);
+                ConsoleScreen.renderConsoleScreen();
+                errorMessage = "";
             }
 
-            return false;
         }
     }
 }

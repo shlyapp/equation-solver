@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace EquationSolver.Equation
+﻿namespace EquationSolverLibrary
 {
-    public class EquationParser
+    public static class EquationSolver
     {
         private static string Reverse(string text)
         {
@@ -19,7 +13,7 @@ namespace EquationSolver.Equation
             return reverse;
         }
 
-        public static double CoaficentCath(string equation, string variable)
+        private static double CoaficentCath(string equation, string variable)
         {
             string Temp = "";
 
@@ -50,7 +44,7 @@ namespace EquationSolver.Equation
                 return 0;
             }
         }
-        public static double CoaficentCath(string equation, string variable, string[] whiteList)
+        private static double CoaficentCath(string equation, string variable, string[] whiteList)
         {
             string Temp = "";
 
@@ -87,5 +81,43 @@ namespace EquationSolver.Equation
                 return 0;
             }
         }
+
+        public static double[] SolveQuadraticEquation(double A, double B, double C, double D, double E, double F)
+        {
+            A = A - D;
+            B = B - E;
+            C = C - F;
+
+
+            if (A == 0)
+            {
+                if (B == 0)
+                {
+                    return new double[3] { 4, 0, 4 };
+                }
+                double x1 = (-C / B);
+                return new double[] { x1 };
+            }
+
+            double discriminant = B * B - (4 * A * C);
+
+            if (discriminant > 0)
+            {
+                double x1 = (-B + Math.Sqrt(discriminant)) / (2 * A);
+                double x2 = (-B - Math.Sqrt(discriminant)) / (2 * A);
+                return new double[] { x1, x2 };
+            }
+            else if (discriminant == 0)
+            {
+                double x1 = (-B) / (2 * A);
+                return new double[] { x1 };
+            }
+            else
+            {
+                return new double[] { };
+            }
+
+        }
+        
     }
 }
