@@ -68,6 +68,10 @@
 `void renderConsoleScreen()` - отображение строк в консоль по порядку <br>
 `void renderConsoleScreen(bool True)` - перегрузка `void renderConsoleScreen()` <br>
 
+## Установка
+- скачать весь код можно клонировав репозиторий `https://github.com/shlyapp/equation-solver.git` <br>
+- актуальная версия программы находится в `releases`<br>
+- скачать проект Visual Studio 2022 можно по ссылке `https://drive.google.com/drive/folders/1hyeTsSlcVCCkyeQPB7w-aIcGGba7kBUB?usp=sharing`<br>
 
 ## Разработчики:
 Насибуллин Данил - TeamLeader
