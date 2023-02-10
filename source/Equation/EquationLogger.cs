@@ -9,14 +9,21 @@ namespace equationSolver.Equation
 {
     public class EquationLogger
     {
-        private string path;
+        /// <summary>
+        /// Путь до файла с историей уравнений
+        /// </summary>
+        static string path;
 
-        public EquationLogger(string path)
+        public static void SetLogPath(string pathToLog)
         {
-            this.path = path;
+            path = pathToLog;
         }
 
-        public List<string> GetHistory()
+        /// <summary>
+        /// Возвращает всю историю введеных раннее уравнений
+        /// </summary>
+        /// <returns>История уравнений</returns>
+        public static List<string> GetHistory()
         {
             List<string> solutions = new List<string>();
             StreamReader file = new StreamReader(path);
@@ -30,14 +37,41 @@ namespace equationSolver.Equation
             return solutions;
         }
 
-        public void AddEquationSolving(string equation, double[] result)
+        /// <summary>
+        /// Добавить уравнение в историю
+        /// </summary>
+        /// <param name="equation">Уравнение</param>
+        /// <param name="result">Решения уравнения</param>
+        public static void AddEquationSolving(string equation, double[] result)
         {
             StreamWriter file = new StreamWriter(path, true);
 
-            file.WriteLine($"Уравнение: {equation}\nКорни: {result[0]} и {result[1]}\n");
-            file.Close();
-        }
+            //Кейс определяющий запись в файл истории уравнений по количеству корней
+            switch (result.Length)
+            {
+                case 0: //Если 0 корней
+                    file.WriteLine($"Уравнение: {equation}\nНет корней\n");
+                    file.Close();
+                    break;
 
-        
+                case 1: // Если 1 корень
+                    file.WriteLine($"Уравнение: {equation}\nКорень: {result[0]}\n");
+                    file.Close();
+                    break;
+
+                case 2: // Если 2 корня
+                    file.WriteLine($"Уравнение: {equation}\nКорни: {result[0]} и {result[1]}\n");
+                    file.Close();
+                    break;
+
+                case 3: // Если 3 корня (3 корня - фатальная ошибка)
+                    file.WriteLine($"Выражение: {equation}\nКорни нельзя найти т.к. это не уравнение\n");
+                    file.Close();
+                    break;
+                default: // На случай непредвиденой ошибки
+                    file.WriteLine($"Выражение: {equation}\nНевозможно распознать\n");
+                    break;
+            }
+        }
     }
 }

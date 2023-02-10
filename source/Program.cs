@@ -10,7 +10,7 @@ namespace EquationSolver
     {
         static void Main(string[] args)
         {
-            UserInreface.SelectUserAction();
+            UserInreface.SelectUserAction(); //Вызов главного меню
         }
     }
 }

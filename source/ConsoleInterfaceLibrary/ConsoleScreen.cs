@@ -2,12 +2,13 @@
 {
     public static class ConsoleScreen
     {
-        //Список строк консоли
-        public static List<String> lines = new List<String>() { "" };
+        //Список строк консоли(приватные, т.к. что бы нельзя было изменить извне, что бы не возникали ошибки)
+        private static List<String> lines = new List<String>() { "" };
 
-        //Добавляет строку в список строк экрана консоли
-        //Так же может их и заменять
-        public static void addLine(String line, int index)
+        /// <summary>
+        /// Заготавливает строку line в строке консоли номер index
+        /// </summary>
+        public static void SetLine(String line, int index)
         {
             if (index < 0)
             {
@@ -29,35 +30,27 @@
             }
         }
 
-        //Очищает строки консоли
-        public static void clearLines()
+
+        /// <summary>
+        /// Очищает все заготовленные строки
+        /// </summary>
+        public static void ClearLines()
         {
             lines.Clear();
-            addLine("", 0);
+            SetLine("", 0);
         }
 
-        //Отображает строки консоли в порядке
-        public static void renderConsoleScreen()
+
+        /// <summary>
+        /// Отображает все заготовленные строки
+        /// </summary>
+        public static void RenderConsoleScreen()
         {
             Console.Clear();
 
             foreach (var line in lines)
             {
-                foreach (var letter in line)
-                    Console.Write(letter);
-                Console.WriteLine();
-            }
-        }
-
-        public static void renderConsoleScreen(bool True)
-        {
-            Console.Clear();
-
-            foreach (var line in lines)
-            {
-                foreach (var letter in line)
-                    Console.Write(letter);
-                Console.WriteLine();
+                Console.WriteLine(line);
             }
         }
     }
