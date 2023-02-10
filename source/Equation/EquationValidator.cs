@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using EquationSolver;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,7 +14,7 @@ namespace EquationSolver
         //Ошибка ввода для вывода пользователю
         private static string errorMessage = "";
         //Список разрешенных символов не включая цифер
-        private static char[] whiteListChar = { '+', '-', '=', 'x' };
+        private static char[] whiteListChar = { '+', '-', '=', 'x', ','};
 
         // Эти методы осуществляют условия возможности написания символов и если
         // нужно, обозначение ошибки
@@ -22,7 +23,10 @@ namespace EquationSolver
         // - Возвращение значения False должно быть в конце метода
         // - Всегда использовать ветвления
         // предотвращающие наибольшее количество выхода из размерности массива выше остальных
-        // - В коде к этим методам обращается программа что бы проверить 
+        // Try Catch нуно что бы упростить код без ущерба его надежности
+        /// <summary>
+        /// Проверяет возможность размещения числа на позиции index в строке line
+        /// </summary>
         private static bool NumberPlaceCondition(string line, char number, int index)
         {
             try
@@ -47,54 +51,104 @@ namespace EquationSolver
                 return true;
             }
         }
+
+        /// <summary>
+        /// Проверяет возможность размещения символа на позиции index в строке line
+        /// </summary>
         private static bool SimbolsPlaceCondition(string line, char simbol, int index)
         {
             try
             {
-                if (simbol == '-')
+                switch (simbol)
                 {
-                    if ((line[index - 1] == '-' || line[index + 1] == '-') || (line[index - 1] == '+' || line[index + 1] == '+'))
-                    {
-                        errorMessage = "Нельзя ставить рядом два знака";
-                        return false;
-                    }
-                }
-                if (simbol == '+')
-                {
-                    if ((line[index - 1] == '+' || line[index + 1] == '+') || (line[index - 1] == '-' || line[index + 1] == '-'))
-                    {
-                        errorMessage = "Нельзя ставить рядом два знака";
-                        return false;
-                    }
-                }
-                if (simbol == '=')
-                {
-                    if (!(line.IndexOf('=') == -1))
-                    {
-                        errorMessage = "В условии уравнения недопустимо два равно";
-                        return false;
-                    }
-                }
-                if (simbol == 'x')
-                {
-                    if (line[index - 1] == 'x' || line[index + 1] == 'x')
-                    {
-                        errorMessage = "Нельзя ставить рядом два x";
-                        return false;
-                    }
-                    for (int i = index - 1; i > 0; i--)
-                    {
-                        if (new char[] { '=', '-', '+' }.Contains(line[i]))
+                    case '-':
+                        if ((line[index - 1] == '-' || line[index - 1] == '+'))
                         {
-                            break;
-                        }
-                        if (line[i] == 'x')
-                        {
-                            errorMessage = "Недопустима неясность с доп. x";
+                            errorMessage = "Нельзя ставить рядом два знака";
                             return false;
                         }
-                    }
-                }
+                        break;
+
+                    case '+':
+                        if (index == 1)
+                        {
+                            errorMessage = "Нельзя ставить рядом два знака";
+                            return false;
+                        }
+                        if ((line[index - 1] == '+' || line[index - 1] == '-'))
+                        {
+                            errorMessage = "Нельзя ставить рядом два знака";
+                            return false;
+                        }
+                        if ((line[index - 1] == '='))
+                        {
+                            errorMessage = "Нельзя ставить плючс после равно";
+                            return false;
+                        }
+                        break;
+
+                    case '=':
+                        if (!(line.IndexOf('=') == -1))
+                        {
+                            errorMessage = "В условии уравнения недопустимо два равно";
+                            return false;
+                        }
+                        if (line[index - 1] == '+' || line[index - 1] == '-')
+                        {
+                            errorMessage = "";
+                            return false;
+                        }
+                        break;
+
+                    case 'x':
+                        if (line[index - 1] == ',')
+                        {
+                            errorMessage = "Нельзя ставить x после запятой";
+                            return false;
+                        }
+                        if (line[index - 1] == 'x')
+                        {
+                            errorMessage = "Нельзя ставить рядом два x";
+                            return false;
+                        }
+                        for (int i = index - 1; i >= 0; i--)
+                        {
+                            if (line[i] == 'x')
+                            {
+                                errorMessage = "Недопустима неясность с доп. x";
+                                return false;
+                            }
+                            if (new char[] { '=', '-', '+' }.Contains(line[i]))
+                            {
+                                break;
+                            }
+                        }
+                        break;
+                    case ',':
+                        if ((index == 0) || (!char.IsNumber(line[index - 1])))
+                        {
+                            errorMessage = "Запятая может стоять только после числа";
+                            return false;
+                        }
+                        if (line[index - 2] == 'x')
+                        {
+                            errorMessage = "Степень не может быть десятичным числом";
+                            return false;
+                        }
+                        for (int i = index - 1; i >= 0; i--)
+                        {
+                            if (line[i] == ',')
+                            {
+                                errorMessage = "Неможет быть число с двумя запятыми";
+                                return false;
+                            }
+                            if (new char[] { '=', '-', '+'}.Contains(line[i]))
+                            {
+                                break;
+                            }
+                        }
+                        break;
+                } 
                 return true;
             }
             catch (IndexOutOfRangeException)
@@ -102,6 +156,10 @@ namespace EquationSolver
                 return true;
             }
         }
+
+        /// <summary>
+        /// Проверяет возможность обработки строки line
+        /// </summary>
         private static bool LineCondition(string line)
         {
             try
@@ -131,6 +189,11 @@ namespace EquationSolver
                     errorMessage = "//Одна часть равно пуста";
                     return false;
                 }
+                if (line[line.Length - 1] == ',')
+                {
+                    errorMessage = "//После запятой должно стоять число";
+                    return false;
+                }
                 if (line[0] == '=')
                 {
                     errorMessage = "//Одна часть равно пуста";
@@ -144,29 +207,9 @@ namespace EquationSolver
             return true;
         }
 
-        //Титры, но не заюзаны
-        static void Titles(List<string> titles)
-        {
-            for (int i = 0; ; i++)
-            {
-                Thread.Sleep(800);
-                int position = i;
-                foreach (var title in titles)
-                {
-
-                    position = position - 2;
-                    if (position < 0) break;
-                    else
-                    {
-                        ConsoleScreen.addLine(new String(' ', 25) + title, position);
-                    }
-
-                }
-                ConsoleScreen.renderConsoleScreen();
-                Console.SetCursorPosition(0, 0);
-                ConsoleScreen.clearLines();
-            }
-        }
+        /// <summary>
+        /// Вызывает интерфейс ввода уравнения
+        /// </summary>
         public static string InputEquation()
         {
             //Константы здачи интерфеса
@@ -176,11 +219,19 @@ namespace EquationSolver
             //Строка ввода
             var inputString = new StringBuilder();
 
-            //Статичная часть интерфейса
-            ConsoleScreen.addLine("Ввод уравнения вида Ax2+Bx+C=Dx2+Ex+F", 0);
-            ConsoleScreen.addLine("-------------------------------------------------", inputLineIndex + 1);
-            ConsoleScreen.addLine("-------------------------------------------------", inputLineIndex - 1);
+            //Задатеся статичная часть интерфейса ввода
+            ConsoleScreen.ClearLines();
 
+            ConsoleScreen.SetLine("Ввод уравнения вида Ax2+Bx+C=Dx2+Ex+F", 0);
+            ConsoleScreen.SetLine("-------------------------------------------------", inputLineIndex + 1);
+            ConsoleScreen.SetLine("", inputLineIndex);
+            ConsoleScreen.SetLine("-------------------------------------------------", inputLineIndex - 1);
+
+            ConsoleScreen.RenderConsoleScreen();
+            //Загрузка стратового статуса интерфейса
+
+
+            errorMessage = "";
             //Цикл ввода уравнения
             while (true)
             {
@@ -200,7 +251,7 @@ namespace EquationSolver
                             inputString.Append(keyChar);
                         }
                     }
-                    // Проверка на возможность написать разрешенный цифр (ссылается на метод выше)
+                    // Проверка на возможность написать разрешенный символ (ссылается на метод выше)
                     else
                     {
                         if (SimbolsPlaceCondition(inputString.ToString(), keyChar, inputString.Length))
@@ -234,10 +285,20 @@ namespace EquationSolver
                 }
 
                 //Апдейт интерфесса консоли
-                ConsoleScreen.addLine(inputString.ToString(), inputLineIndex);
-                ConsoleScreen.addLine("|!|" + errorMessage, errortLineIndex);
-                ConsoleScreen.renderConsoleScreen();
-                errorMessage = "";
+                ConsoleScreen.SetLine(inputString.ToString(), inputLineIndex);
+                //Условие вывода ошибки ввода
+                if (errorMessage.Length > 0)//Если есть ошиька
+                {
+                    ConsoleScreen.SetLine("|!|" + errorMessage, errortLineIndex);
+                
+                }
+                else//Иначе
+                {
+                    ConsoleScreen.SetLine("", errortLineIndex);
+                }
+                ConsoleScreen.RenderConsoleScreen();
+
+                errorMessage = ""; //Сброс ошибки
             }
         }
     }
